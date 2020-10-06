@@ -7,7 +7,7 @@ namespace ModuloCompras.Models.Fornecedor
 {
     public class FornecedorVD
     {
-        public int CodFornecedor { get; set; }
+        public int? CodFornecedor { get; set; }
         public string DscFornecedor { get; set; }
         public FornecedorVD()
         {

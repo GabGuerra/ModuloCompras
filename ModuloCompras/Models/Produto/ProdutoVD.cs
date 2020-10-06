@@ -16,9 +16,6 @@ namespace ModuloCompras.Models.Produto
         public ProdutoVD()
         {  
             Fornecedor = new FornecedorVD();
-        }
-        public ProdutoVD(string NomeProduto)
-        {
-        }
+        }        
     }
 }

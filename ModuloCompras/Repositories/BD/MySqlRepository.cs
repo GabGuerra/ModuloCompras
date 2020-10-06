@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Data;
 
@@ -67,6 +68,22 @@ namespace ModuloCompras.Repositories.BD
                 _conn.Close();
             }
             return registro;
+        }
+
+        protected int ObterLastID(MySqlCommand cmd)
+        {
+            var id = 0;
+            cmd.Connection = _conn;
+            _conn.Open();
+            try
+            {
+                id = Convert.ToInt32(cmd.ExecuteScalar());                       
+            }
+            finally
+            {
+                _conn.Close();
+            }
+            return id;
         }
 
         protected void ExecutarComando(MySqlCommand cmd)

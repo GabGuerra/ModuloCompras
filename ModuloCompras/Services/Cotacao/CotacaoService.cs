@@ -10,14 +10,25 @@ namespace ModuloCompras.Services.Cotacao
     public class CotacaoService : ICotacaoService
     {
         private ICotacaoRepository _repository;
-        public CotacaoService(ICotacaoRepository cotacaoRepository)
+        public ICotacaoProdutoService _cotacaoProdutoService;
+        public CotacaoService(ICotacaoRepository cotacaoRepository, ICotacaoProdutoService cotacaoProdutoService)
         {
             _repository = cotacaoRepository;
+            _cotacaoProdutoService = cotacaoProdutoService;
         }
 
         public ResultadoVD AprovarCotacao(CotacaoVD cotacao)
         {
             var resultado = new ResultadoVD() { Sucesso = true };
+            try
+            {
+                _repository.AprovarCotacao(cotacao);
+            }
+            catch (Exception ex)
+            {
+                resultado.Sucesso = false;
+                resultado.Mensagem = "Erro ao Aprovar cotação: " + ex.Message;
+            }
             return resultado;
         }
 
@@ -27,10 +38,17 @@ namespace ModuloCompras.Services.Cotacao
             try
             {
                 ListaCotacaoRetorno = _repository.BuscarListaCotacao();
+                if (ListaCotacaoRetorno.Count > 0)
+                {
+                    foreach (var cotacao in ListaCotacaoRetorno)
+                    {
+                        cotacao.ListaProdutos =_cotacaoProdutoService.BuscarListaCotacaoProduto(Convert.ToInt32(cotacao.CodCotacao));
+                    }
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-               
+
             }
             return ListaCotacaoRetorno;
         }
@@ -44,12 +62,17 @@ namespace ModuloCompras.Services.Cotacao
                 {
 
                     _repository.InserirCotacao(cotacao);
+
+                    if (cotacao.ListaProdutos.Count > 0)
+                    {
+                        _cotacaoProdutoService.InsereProdutoCotacao(cotacao.ListaProdutos, Convert.ToInt32(cotacao.CodCotacao));
+                    }
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 resultado.Sucesso = false;
-                resultado.Mensagem = "Erro ao Inserir cotações.";
+                resultado.Mensagem = "Erro ao Inserir cotações." + ex;
             }
             return resultado;
         }
